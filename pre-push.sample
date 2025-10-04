@@ -1,0 +1,16 @@
+#!/bin/sh
+
+echo "Running Excel sync tool..."
+
+# 确保中文路径不被转义
+git config --local core.quotepath false
+
+# 获取 push 中的 Excel 文件（新增或修改）
+files=$(git diff --name-only origin/main..HEAD --diff-filter=AM --no-renames | grep -E '\.xlsx$')
+
+echo "Files found for sync: $files"
+
+if [ -n "$files" ]; then
+     echo "Syncing all Excel files to MySQL in one batch..."
+    ./table_tool $files || echo "Excel sync failed, but push will continue"
+fi
